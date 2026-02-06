@@ -17,7 +17,7 @@ OpenGhost intends to be a futuristic and aesthetic display medium that can run a
 - 5V 5A USB-C power supply (5V 3A is suitable as well, but the former is recommended)
 - 4x M2.5x14 mm screws
 - 3D printed STL files in `/stl_files`
-- Camera (optional). The one shown in the demo's is the [Raspberry Pi Camera Module 3](https://www.raspberrypi.com/products/camera-module-3/)
+- Camera (optional). The one shown is the [Raspberry Pi Camera Module 3](https://www.raspberrypi.com/products/camera-module-3/)
 
 ### Software
 
