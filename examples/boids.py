@@ -10,7 +10,7 @@ HEIGHT = 720
 
 # overall settings
 MARGIN = 200
-NUM_BOIDS = 100
+NUM_BOIDS = 10
 
 # boid flocking behavior constants
 CENTER_FACTOR = 0.01
@@ -26,8 +26,8 @@ SPEED_LIMIT = 10
 CELL_SIZE = VISUAL_RANGE
 NEIGHBOR_OFFSETS = (
     (-1, -1), (-1, 0), (-1, 1),
-    (0, -1),  (0, 0),  (0, 1),
-    (1, -1),  (1, 0),  (1, 1),
+    (0, -1), (0, 0), (0, 1),
+    (1, -1), (1, 0), (1, 1),
 )
 
 
@@ -45,6 +45,7 @@ def iter_neighbor_indices(boid, grid):
     cx, cy = int(boid.x // CELL_SIZE), int(boid.y // CELL_SIZE)
     for offset_x, offset_y in NEIGHBOR_OFFSETS:
         yield from grid.get((cx + offset_x, cy + offset_y), ())
+
 
 def build_color_lookup(size=256):
     """Pre-calculate colors indexed by normalized speed."""
@@ -74,25 +75,25 @@ class Boid:
         self.y = y
         self.dx = dx
         self.dy = dy
-    
+
     def update(self):
         self.x += self.dx
         self.y += self.dy
-    
+
     def distance_squared(self, other):
         """Fast distance calculation without square root"""
         dx = self.x - other.x
         dy = self.y - other.y
         return dx * dx + dy * dy
-    
+
     def show(self):
         velocity = sqrt(self.dx ** 2 + self.dy ** 2)
-        
+
         # Use lookup table for color calculation
         normalized_velocity = min(velocity / 10.0, 1.0)
         color_index = int(normalized_velocity * 255)
         red, green, blue = COLOR_LOOKUP[color_index]
-        
+
         fill(red, green, blue)
         circle(self.x, self.y, 10)
 
@@ -101,7 +102,7 @@ class Boid:
             self.dx += BOUND_FACTOR
         elif self.x > WIDTH - MARGIN:
             self.dx -= BOUND_FACTOR
-        
+
         if self.y < MARGIN:
             self.dy += BOUND_FACTOR
         elif self.y > HEIGHT - MARGIN:
@@ -119,16 +120,16 @@ class Boid:
         center_x = 0
         center_y = 0
         cohesion_neighbors = 0
-        
+
         # Alignment variables
         avg_dx = 0
         avg_dy = 0
         alignment_neighbors = 0
-        
+
         # Separation variables
         avoid_dx = 0
         avoid_dy = 0
-        
+
         for idx in neighbor_indices:
             other_boid = boids[idx]
             if other_boid is self:
@@ -149,7 +150,6 @@ class Boid:
                 avg_dy += other_boid.dy
                 alignment_neighbors += 1
 
-        
         self.dx += avoid_dx * AVOIDANCE_FACTOR
         self.dy += avoid_dy * AVOIDANCE_FACTOR
 
@@ -168,7 +168,9 @@ class Boid:
 def settings():
     size(WIDTH, HEIGHT, py5.P2D)
 
+
 boids: list[Boid] = []
+
 
 def setup():
     rect_mode(py5.CENTER)
@@ -181,6 +183,7 @@ def setup():
         dx = random(-3, 3)
         dy = random(-3, 3)
         boids.append(Boid(x, y, dx, dy))
+
 
 def draw():
     no_cursor()
