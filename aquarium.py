@@ -12,6 +12,7 @@ def settings():
     py5.size(WIDTH,HEIGHT)
 
 def setup():
+    py5.color_mode(py5.HSB, 360, 100, 100) # Use HSB so we better control fish color & visibility
     set_mono_font()
 
     # create new fish moving and random direction and speed
@@ -31,7 +32,7 @@ def draw():
     """
     Sets background and renders each fish's updated velocity
     """
-    py5.background(38,37,67)
+    py5.background(242,45,26)
     for fish in fish_list:
         fish.update()
         fish.display()

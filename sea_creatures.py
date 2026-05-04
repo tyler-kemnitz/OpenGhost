@@ -36,6 +36,11 @@ class Fish:
 
         self._wander_cooldown = 0 # Prevents fish from changing direction every frame
 
+        # Set HSB color values on init so they remain consistent throughout rendering
+        self.hue = random.randint(0, 360)
+        self.saturation = random.randint(60,90) # keeps colors vivid without being too much
+        self.brightness = random.randint(70, 100) # Keep brightness high so fish don't blend into background
+
     ##
     # Public Interface
     ##
@@ -46,7 +51,7 @@ class Fish:
         self._wander()
 
     def display(self):
-        py5.fill(255,255,255) # Set fish color
+        py5.fill(self.hue, self.saturation, self.brightness) # Set fish color
         py5.text(self._sprite(), self.x, self.y)
 
     ###
