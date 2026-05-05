@@ -41,7 +41,7 @@ def set_mono_font():
     """
     Applies global mono font to rendered aquarium artifacts
     """
-    noto_sans_mono = py5.create_font('Noto Sans Mono', 32)
+    noto_sans_mono = py5.create_font('Monospaced', 32)
     py5.text_font(noto_sans_mono)
     py5.text_align(py5.LEFT, py5.CENTER)
 
