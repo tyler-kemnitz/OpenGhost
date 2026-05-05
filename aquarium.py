@@ -1,3 +1,4 @@
+import platform
 import random
 import math
 import py5
@@ -41,8 +42,20 @@ def set_mono_font():
     """
     Applies global mono font to rendered aquarium artifacts
     """
-    noto_sans_mono = py5.create_font('Monospaced', 32)
-    py5.text_font(noto_sans_mono)
+    mono_font = py5.create_font(get_sys_mono_font(), 32)
+    py5.text_font(mono_font)
     py5.text_align(py5.LEFT, py5.CENTER)
+
+def get_sys_mono_font():
+    """
+    Determines mono font to apply to sketch depending on OS
+    """
+    fonts = {
+        "Linux": "Noto Sans Mono",
+        "Darwin": "Menlo", # MacOS sys default mono font
+        "Windows": "Consolas"
+    }
+
+    return fonts.get(platform.system(), "Courier New")
 
 py5.run_sketch()
