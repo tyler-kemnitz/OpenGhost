@@ -1,4 +1,6 @@
+import platform
 import random
+import math
 import py5
 from sea_creatures import Fish
 
@@ -11,28 +13,49 @@ def settings():
     py5.size(WIDTH,HEIGHT)
 
 def setup():
-    py5.background(0,0,0)
+    py5.color_mode(py5.HSB, 360, 100, 100) # Use HSB so we better control fish color & visibility
     set_mono_font()
 
     # create new fish moving and random direction and speed
     for _ in range(5):
+        # My Fish
         fish_list.append(
-            Fish(random.randint(MARGIN, WIDTH),
-                 random.randint(MARGIN, HEIGHT),
-                 random.uniform(1.5, 2.5) * random.choice([-1, 1]),
-                 random.uniform(-0.5, 0.5),
-                 MARGIN)
+            Fish(
+                x=random.randint(MARGIN, WIDTH - MARGIN),
+                y=random.randint(MARGIN, HEIGHT - MARGIN),
+                speed=random.uniform(0.8, 1.2),
+                angle=random.uniform(-math.pi, math.pi),
+                margin=MARGIN
+            )
         )
 
 def draw():
-    py5.background(0,0,0)
+    """
+    Sets background and renders each fish's updated velocity
+    """
+    py5.background(242,45,26)
     for fish in fish_list:
         fish.update()
         fish.display()
 
 def set_mono_font():
-    noto_sans_mono = py5.create_font('Noto Sans Mono', 32)
-    py5.text_font(noto_sans_mono)
+    """
+    Applies global mono font to rendered aquarium artifacts
+    """
+    mono_font = py5.create_font(get_sys_mono_font(), 32)
+    py5.text_font(mono_font)
     py5.text_align(py5.LEFT, py5.CENTER)
+
+def get_sys_mono_font():
+    """
+    Determines mono font to apply to sketch depending on OS
+    """
+    fonts = {
+        "Linux": "Noto Sans Mono",
+        "Darwin": "Menlo", # MacOS sys default mono font
+        "Windows": "Consolas"
+    }
+
+    return fonts.get(platform.system(), "Courier New")
 
 py5.run_sketch()
