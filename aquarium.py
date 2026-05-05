@@ -2,9 +2,15 @@ import platform
 import random
 import math
 import py5
+
+# local imports
 from sea_creatures import Fish
+from sea_plants import Seaweed
 
 fish_list: list[Fish] = []
+seaweed_list: list[Seaweed] = []
+
+# Base canvas attrs. Aligns to Hyperpixel square display
 WIDTH = 750
 HEIGHT = 750
 MARGIN = 25
@@ -28,12 +34,27 @@ def setup():
                 margin=MARGIN
             )
         )
+    
+    # create seaweed to sway upon the floor
+    for _ in range(8):
+        seaweed_list.append(
+            Seaweed(
+                x = random.randint(MARGIN, WIDTH - MARGIN),
+                height = random.randint(100,220)
+            )
+        )
 
 def draw():
     """
     Sets background and renders each fish's updated velocity
     """
-    py5.background(242,45,26)
+    py5.background(242,45,26) # deep blue
+
+    # Draw seaweed first, behind fish
+    for seaweed in seaweed_list:
+        seaweed.display()
+    
+    # SWIM
     for fish in fish_list:
         fish.update()
         fish.display()
@@ -51,9 +72,9 @@ def get_sys_mono_font():
     Determines mono font to apply to sketch depending on OS
     """
     fonts = {
-        "Linux": "Noto Sans Mono",
-        "Darwin": "Menlo", # MacOS sys default mono font
-        "Windows": "Consolas"
+        "Linux": "Noto Sans Mono", # Linux font present on both Fedora and Bookworm
+        "Darwin": "Menlo",         # MacOS sys default mono font
+        "Windows": "Consolas"      # Obligatory Windows support
     }
 
     return fonts.get(platform.system(), "Courier New")
