@@ -19,6 +19,9 @@ def settings():
     py5.size(WIDTH,HEIGHT)
 
 def setup():
+    """
+    Configures global styling and aquarium artifacts
+    """
     py5.color_mode(py5.HSB, 360, 100, 100) # Use HSB so we better control fish color & visibility
     set_mono_font()
 
@@ -36,7 +39,7 @@ def setup():
         )
     
     # create seaweed to sway upon the floor
-    for _ in range(8):
+    for _ in range(18):
         seaweed_list.append(
             Seaweed(
                 x = random.randint(MARGIN, WIDTH - MARGIN),
@@ -45,9 +48,7 @@ def setup():
         )
 
 def draw():
-    """
-    Sets background and renders each fish's updated velocity
-    """
+    """Renders background and manages sea critters"""
     py5.background(242,45,26) # deep blue
 
     # Draw seaweed first, behind fish
@@ -60,17 +61,13 @@ def draw():
         fish.display()
 
 def set_mono_font():
-    """
-    Applies global mono font to rendered aquarium artifacts
-    """
+    """Applies global mono font to rendered aquarium artifacts"""
     mono_font = py5.create_font(get_sys_mono_font(), 32)
     py5.text_font(mono_font)
     py5.text_align(py5.LEFT, py5.CENTER)
 
 def get_sys_mono_font():
-    """
-    Determines mono font to apply to sketch depending on OS
-    """
+    """Determines mono font to apply to sketch depending on OS"""
     fonts = {
         "Linux": "Noto Sans Mono", # Linux font present on both Fedora and Bookworm
         "Darwin": "Menlo",         # MacOS sys default mono font

@@ -14,6 +14,10 @@ class Seaweed:
     # Lower = slower sway, Higher = rapid sway
     SWAY_SPEED = 0.025
 
+    # per-segment lateral bulge of control points, in pixels
+    # this creates visible curvature within each segment
+    SEGMENT_CURVE = 10
+
     # HSB color values (green seaweed)
     HUE = 120
     SATURATION = 70
@@ -69,9 +73,13 @@ class Seaweed:
             cp2_t = (base_y - cp2_y) / self.height
             end_t = (base_y - end_y) / self.height
 
+            # Alternate bulge direction to produce an S-curve
+            curve_sign = 1 if i % 2 == 0 else -1
+            lateral = self.SEGMENT_CURVE * curve_sign
+
             py5.bezier_vertex(
-                self.x + sway * cp1_t, cp1_y,
-                self.x + sway * cp2_t, cp2_y,
+                self.x + sway * cp1_t + lateral, cp1_y,
+                self.x + sway * cp2_t + lateral, cp2_y,
                 self.x + sway * end_t, end_y
             )
         
