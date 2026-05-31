@@ -72,16 +72,14 @@ class Fish:
         wall_target = self._get_wall_avoidance_angle()
         if wall_target is not None:
             wall_delta = _angle_delta(self.angle, wall_target)
-            # apply wall steering at twice normal turn rate so fish reacts quickly enough to not clip boundary
+            # apply wall steering at faster-than-normal turn rate so fish reacts quickly enough to not clip boundary
             self.angle += py5.constrain(wall_delta, -self.TURN_RATE * 1.2, self.TURN_RATE * 1.2)
 
             # update target angle so fish does not fight wall correction on next frame
             self.target_angle = self.angle
 
     def _move(self):
-        """
-        Translate position along current heading, then clamp to environment boundaries
-        """
+        """Translate position along current heading, then clamp to environment boundaries"""
         self.x += math.cos(self.angle) * self.speed
         self.y += math.sin(self.angle) * self.speed
 
