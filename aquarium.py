@@ -19,14 +19,19 @@ def settings():
     py5.size(WIDTH,HEIGHT)
 
 def setup():
-    """
-    Configures global styling and aquarium artifacts
-    """
+    """Configures global styling and aquarium artifacts"""
     py5.color_mode(py5.HSB, 360, 100, 100) # Use HSB so we better control fish color & visibility
     set_mono_font()
 
-    # create new fish moving and random direction and speed
-    for _ in range(5):
+    # create fish to swim throughout the tank
+    _init_fish(5)
+    
+    # create seaweed to sway upon the floor
+    _init_seaweed(10, 25)
+
+def _init_fish(num_fish):
+    """Initializes specified number of fish to render moving at random direction and speed"""
+    for _ in range(num_fish):
         # My Fish
         fish_list.append(
             Fish(
@@ -37,15 +42,32 @@ def setup():
                 margin=MARGIN
             )
         )
-    
-    # create seaweed to sway upon the floor
-    for _ in range(10):
-        seaweed_list.append(
-            Seaweed(
-                x = random.randint(MARGIN, WIDTH - MARGIN),
-                height = random.randint(100,220)
+
+def _init_seaweed(num_plants, min_spacing):
+    """
+    Initializes seaweed stalks, spaced properly with respect to provided inputs
+
+    Args:
+        num_plants: Number of separate stalks to render
+        min_spacing: Number of pixels to enforce between rendered stalks
+    """
+    placed_x = []
+    attempts = 0
+    max_attempts = 1000 # prevents infinite loop
+
+    while len(placed_x) < num_plants and attempts < max_attempts:
+        attempts += 1
+        candidate_x = random.randint(MARGIN, WIDTH - MARGIN)
+
+        # only init seaweed if position aligns to spacing constraints
+        if all(abs(candidate_x - px) >= min_spacing for px in placed_x):
+            placed_x.append(candidate_x)
+            seaweed_list.append(
+                Seaweed(
+                    x=candidate_x,
+                    height=random.randint(100,220)
+                )
             )
-        )
 
 def draw():
     """Renders background and manages sea critters"""
