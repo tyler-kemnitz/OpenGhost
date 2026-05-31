@@ -39,7 +39,7 @@ def setup():
         )
     
     # create seaweed to sway upon the floor
-    for _ in range(18):
+    for _ in range(10):
         seaweed_list.append(
             Seaweed(
                 x = random.randint(MARGIN, WIDTH - MARGIN),
