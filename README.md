@@ -47,6 +47,18 @@ I'm using the Python library [py5](https://py5coding.org/index.html) to display 
 - Run `export DISPLAY=:0.0` if the terminal session is new
 - Run the desired Python file
 
+## Project Structure
+
+As OpenGhost programs grow more complex, the repo separates a few concerns so any single file stays easy to read:
+
+- **Entry-point scripts** (e.g. `aquarium.py`) live at the repo root. These are the files you actually run with `python <file>.py`. They should stay thin and only implement the three functions py5 requires: `settings()`, `setup()`, and `draw()` — all delegating to a scene.
+- **`scenes/`** holds scene classes that own and orchestrate everything an entry-point script draws (e.g. `AquariumScene`). A scene exposes `setup()`, `update()`, and `display()`, following the contract in `scenes/scene.py`, so an entry-point script stays simple no matter how many entities the scene manages.
+- **`entities/`** holds the drawable object classes themselves (e.g. `Fish`, `Seaweed`). Each entity knows how to update and draw itself, but nothing about what else exists in the scene around it.
+- **`common/`** holds small, reusable helpers shared across entities or scenes that aren't tied to any one entity (angle math, font setup, etc.).
+- **`debug/`** is reserved for standalone scripts used to debug or visualize a sketch (an FPS overlay, a margin visualizer, etc.). These are dev tools, not part of any production sketch — see `debug/README.md`.
+
+To add a new sketch: create a scene class under `scenes/`, add any new drawable entities under `entities/`, and add a thin entry-point script at the repo root that wires the scene into py5's lifecycle, following the pattern in `aquarium.py`.
+
 ## Alternative Development Workflows
 
 While working on the actual `py5` programs, I found it a bit easier to use my home desktop environment for development.
