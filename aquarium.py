@@ -11,13 +11,13 @@ fish_list: list[Fish] = []
 seaweed_list: list[Seaweed] = []
 
 # Base canvas attrs. Aligns to Hyperpixel square display
-WIDTH = 700
-HEIGHT = 650
-
+WIDTH = 750
+HEIGHT = 750
 MARGIN = 25
 
+# Attrs to account for the restricted visible area imposed by 50mm cube
 VISIBLE_WIDTH = 550 
-VISIBLE_HEIGHT = 582 # accounts for OS toolbar since we're not running in full screen
+VISIBLE_HEIGHT = 550
 VISIBLE_OFFSET_X = (WIDTH - VISIBLE_WIDTH) // 2
 VISIBLE_OFFSET_Y = (HEIGHT - VISIBLE_HEIGHT) // 2
 
