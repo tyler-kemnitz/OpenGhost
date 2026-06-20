@@ -12,7 +12,7 @@ class AquariumScene(Scene):
 
     BACKGROUND_COLOR = (242, 45, 26) # In HSB
 
-    def __init__(self, width: int, height: int, margin: int=25)
+    def __init__(self, width: int, height: int, margin: int=25):
         self.width = width
         self.height = height
         self.margin = margin
