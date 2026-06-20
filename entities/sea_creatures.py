@@ -2,6 +2,8 @@ import py5
 import math
 import random
 
+from common.angles import normalize_angle, angle_delta
+
 class Fish:
     # How quickly the fish turns toward its target angle (radians per frame).
     # Lower = lazier, wider arcs. Higher = snappier turns.
@@ -65,15 +67,15 @@ class Fish:
         then check whether wall proximity demands override
         """
         # Get shortest angular path to current target
-        delta = _angle_delta(self.angle, self.target_angle)
+        delta = angle_delta(self.angle, self.target_angle)
         self.angle += py5.constrain(delta, -self.TURN_RATE, self.TURN_RATE)
-        self.angle = _normalize_angle(self.angle)
+        self.angle = normalize_angle(self.angle)
 
         ## Wall Avoidance
         # If fish is within turn margin for any wall, apply a new target angle so the fish curves away naturally
         wall_target = self._get_wall_avoidance_angle()
         if wall_target is not None:
-            wall_delta = _angle_delta(self.angle, wall_target)
+            wall_delta = angle_delta(self.angle, wall_target)
             # apply wall steering at faster-than-normal turn rate so fish reacts quickly enough to not clip boundary
             self.angle += py5.constrain(wall_delta, -self.TURN_RATE * 1.2, self.TURN_RATE * 1.2)
 
@@ -110,7 +112,7 @@ class Fish:
             bias_sign = -math.copysign(1.0, math.sin(self.angle))
             biased_nudge = random.uniform(-self.WANDER_NUDGE, self.WANDER_NUDGE) + (bias_sign * horizontal_bias)
 
-            self.target_angle = _normalize_angle(self.angle + biased_nudge)
+            self.target_angle = normalize_angle(self.angle + biased_nudge)
             self._wander_cooldown = random.randint(120, 300)
 
     def _get_wall_avoidance_angle(self):
@@ -140,18 +142,4 @@ class Fish:
         """Return ASCII sprite matching the fish's current heading"""
         # cos(angle) > 0 means fish is moving to the right
         return '>\')))>' if math.cos(self.angle) >= 0 else '<\'(((<'
-
-###
-# Module-level angle utilities
-###
-def _normalize_angle(angle):
-    """Wrap an angle into (-pi, pi]"""
-    while angle > math.pi:
-        angle -= 2 * math.pi
-    while angle <= -math.pi:
-        angle += 2 * math.pi
-    return angle
-
-def _angle_delta(current: float, target: float) -> float:
-    """Return shortest signed angular distance from current to target"""
-    return _normalize_angle(target - current)
+    

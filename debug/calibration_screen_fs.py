@@ -9,8 +9,7 @@ def setup():
     py5.text_align(py5.LEFT, py5.TOP)
     py5.text_size(14)
 
-""" Creates a 50px square grid across full_screen render.
-"""
+"""Creates a 50px square grid across full_screen render."""
 def draw():
     py5.background(0)
     py5.stroke(255)
