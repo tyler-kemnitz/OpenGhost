@@ -16,8 +16,8 @@ HEIGHT = 650
 
 MARGIN = 25
 
-VISIBLE_WIDTH = 600 # accounts for OS toolbar since we're not running in full screen
-VISIBLE_HEIGHT = 550 
+VISIBLE_WIDTH = 550 
+VISIBLE_HEIGHT = 582 # accounts for OS toolbar since we're not running in full screen
 VISIBLE_OFFSET_X = (WIDTH - VISIBLE_WIDTH) // 2
 VISIBLE_OFFSET_Y = (HEIGHT - VISIBLE_HEIGHT) // 2
 
