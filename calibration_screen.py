@@ -11,6 +11,8 @@ def setup():
     py5.text_align(py5.LEFT, py5.TOP)
     py5.text_size(14)
 
+"""Creates 50 px grid for WIDTH x HEIGHT windowed screen
+"""
 def draw():
     py5.background(0)
     py5.stroke(255)
