@@ -13,7 +13,13 @@ seaweed_list: list[Seaweed] = []
 # Base canvas attrs. Aligns to Hyperpixel square display
 WIDTH = 750
 HEIGHT = 750
+
 MARGIN = 25
+
+VISIBLE_WIDTH = 550 # accounts for OS toolbar since we're not running in full screen
+VISIBLE_HEIGHT = 600 
+VISIBLE_OFFSET_X = (WIDTH - VISIBLE_WIDTH) // 2
+VISIBLE_OFFSET_Y = (HEIGHT - VISIBLE_HEIGHT) // 2
 
 def settings():
     py5.size(WIDTH,HEIGHT)
@@ -35,11 +41,13 @@ def _init_fish(num_fish):
         # My Fish
         fish_list.append(
             Fish(
-                x=random.randint(MARGIN, WIDTH - MARGIN),
-                y=random.randint(MARGIN, HEIGHT - MARGIN),
+                x=random.randint(MARGIN, VISIBLE_WIDTH - MARGIN),
+                y=random.randint(MARGIN, VISIBLE_HEIGHT - MARGIN),
                 speed=random.uniform(0.8, 1.2),
                 angle=random.uniform(-math.pi, math.pi),
-                margin=MARGIN
+                margin=MARGIN,
+                env_width=VISIBLE_WIDTH,
+                env_height=VISIBLE_HEIGHT
             )
         )
 
@@ -73,6 +81,10 @@ def draw():
     """Renders background and manages sea critters"""
     py5.background(242,45,26) # deep blue
 
+    # set translation layer for visible height/width
+    py5.push_matrix()
+    py5.translate(VISIBLE_OFFSET_X, VISIBLE_OFFSET_Y)
+
     # Draw seaweed first, behind fish
     for seaweed in seaweed_list:
         seaweed.display()
@@ -81,6 +93,8 @@ def draw():
     for fish in fish_list:
         fish.update()
         fish.display()
+    
+    py5.pop_matrix()
 
 def set_mono_font():
     """Applies global mono font to rendered aquarium artifacts"""

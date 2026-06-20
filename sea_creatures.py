@@ -14,7 +14,7 @@ class Fish:
     # Maximum random nudge (radians) applied to the target angle each wander event.
     WANDER_NUDGE = math.pi / 6  # 30 degrees
 
-    def __init__(self, x, y, speed, angle, margin):
+    def __init__(self, x, y, speed, angle, margin, env_width, env_height):
         """
         Args:
             x, y: Initial position
@@ -26,13 +26,15 @@ class Fish:
         self.angle= angle
         self.target_angle = angle # heading fish is steering toward
         self.margin = margin
+        self.env_width = env_width
+        self.env_height = env_height
 
         # ensure sprite is not spawned outside x/y constraints
         self.sprite_width = py5.text_width(self._sprite())
         self.sprite_height = py5.text_ascent() + py5.text_descent()
 
-        self.x = py5.constrain(x, self.margin, py5.width - self.margin - self.sprite_width)
-        self.y = py5.constrain(y, self.margin, py5.height - self.margin - self.sprite_height)
+        self.x = py5.constrain(x, self.margin, self.env_width - self.margin - self.sprite_width)
+        self.y = py5.constrain(y, self.margin, self.env_height - self.margin - self.sprite_height)
 
         self._wander_cooldown = 0 # Prevents fish from changing direction every frame
 
@@ -83,8 +85,8 @@ class Fish:
         self.x += math.cos(self.angle) * self.speed
         self.y += math.sin(self.angle) * self.speed
 
-        right_bound = py5.width - self.margin - self.sprite_width
-        bottom_bound = py5.height - self.margin - self.sprite_height
+        right_bound = self.env_width - self.margin - self.sprite_width
+        bottom_bound = self.env_height - self.margin - self.sprite_height
 
         self.x = py5.constrain(self.x, self.margin, right_bound)
         self.y = py5.constrain(self.y, self.margin, bottom_bound)
@@ -117,8 +119,8 @@ class Fish:
         or None if fish is not close to any wall.
         """
         turn_sense = self.margin + self.WALL_SENSE_DISTANCE
-        right_bound = py5.width - self.margin - self.sprite_width - self.WALL_SENSE_DISTANCE
-        bottom_bound = py5.height - self.margin - self.sprite_height - self.WALL_SENSE_DISTANCE
+        right_bound = self.env_width - self.margin - self.sprite_width - self.WALL_SENSE_DISTANCE
+        bottom_bound = self.env_height - self.margin - self.sprite_height - self.WALL_SENSE_DISTANCE
 
         near_left = self.x < turn_sense
         near_right = self.x > right_bound
@@ -129,8 +131,8 @@ class Fish:
             return None
 
         # aim toward center of environment with vertical bias so fish arcs instead of turning sharply
-        cx = py5.width / 2
-        cy = py5.height / 2
+        cx = self.env_width / 2
+        cy = self.env_height / 2
 
         return math.atan2(cy - self.y, cx - self.x)
 
