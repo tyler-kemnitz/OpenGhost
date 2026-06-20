@@ -25,15 +25,16 @@ OpenGhost intends to be a futuristic and aesthetic display medium that can run a
 ### Software
 I'm using the Python library [py5](https://py5coding.org/index.html) to display graphics. If you are planning to do the same, follow these instructions:
 
-- Install Raspberry Pi OS Bookworm (uses Python 3.11)
-  - If using Raspberry Pi Imager, select Legacy 64-bit that specifies Bookworm
-- Enable the square display on the Pi by following [these instructions](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251444307). If you used a different display, follow the manufacturer's instructions to enable it
-  - For the HyperPixel display, more detailed guidance can be found [here](https://github.com/pimoroni/hyperpixel4/issues/177) 
-- Install a virtual environment with system site packages `python -m venv .venv --system-site-packages`
-- Install Java headless using `sudo apt update && sudo apt install default-jdk`
-  - For Bookworm, this will install Java 17 by default.
-- Install py5 using `pip install py5` (requires Java 17+)
-- Clone this repo
+1.  Install Raspberry Pi OS Bookworm (uses Python 3.11)
+    1.  If using Raspberry Pi Imager, select Legacy 64-bit that specifies Bookworm
+2. Enable the square display on the Pi by following [these instructions](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251444307). If you used a different display, follow the manufacturer's instructions to enable it
+    1. For the HyperPixel display, more detailed guidance can be found [here](https://github.com/pimoroni/hyperpixel4/issues/177) 
+3. Clone this repository and `cd` into the base directory.
+4. Install a virtual environment with system site packages: `python -m venv .venv --system-site-packages`
+5. Activate the virtual environment: `source .venv/bin/activate`
+6. Install Java headless using `sudo apt update && sudo apt install default-jdk`
+    1. For Bookworm, this will install Java 17 by default.
+7. Install py5 using `pip install py5` (requires Java 17+)
 
 #### If The Camera Is Being Used
 - Downgrade numpy to `numpy==1.26.4` (any numpy version less than 2.0)
@@ -45,6 +46,18 @@ I'm using the Python library [py5](https://py5coding.org/index.html) to display 
 - Open a terminal and activate the virtual environment
 - Run `export DISPLAY=:0.0` if the terminal session is new
 - Run the desired Python file
+
+## Project Structure
+
+As OpenGhost programs grow more complex, the repo separates a few concerns so any single file stays easy to read:
+
+- **Entry-point scripts** (e.g. `aquarium.py`) live at the repo root. These are the files you actually run with `python <file>.py`. They should stay thin and only implement the three functions py5 requires: `settings()`, `setup()`, and `draw()` — all delegating to a scene.
+- **`scenes/`** holds scene classes that own and orchestrate everything an entry-point script draws (e.g. `AquariumScene`). A scene exposes `setup()`, `update()`, and `display()`, following the contract in `scenes/scene.py`, so an entry-point script stays simple no matter how many entities the scene manages.
+- **`entities/`** holds the drawable object classes themselves (e.g. `Fish`, `Seaweed`). Each entity knows how to update and draw itself, but nothing about what else exists in the scene around it.
+- **`common/`** holds small, reusable helpers shared across entities or scenes that aren't tied to any one entity (angle math, font setup, etc.).
+- **`debug/`** is reserved for standalone scripts used to debug or visualize a sketch (an FPS overlay, a margin visualizer, etc.). These are dev tools, not part of any production sketch — see `debug/README.md`.
+
+To add a new sketch: create a scene class under `scenes/`, add any new drawable entities under `entities/`, and add a thin entry-point script at the repo root that wires the scene into py5's lifecycle, following the pattern in `aquarium.py`.
 
 ## Alternative Development Workflows
 

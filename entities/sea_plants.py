@@ -29,7 +29,7 @@ class Seaweed:
     FLUTTER_FREQUENCY = 3 * math.pi  # tighter wave cycles than the primary
 
 
-    def __init__(self, x, height):
+    def __init__(self, x, height, env_height):
         """
         Args:
             x: Horizontal anchor position of the base
@@ -37,6 +37,7 @@ class Seaweed:
         """
         self.x = x
         self.height = height
+        self.env_height = env_height
 
         # random phase so multiple stalks don't sway together
         self._phase = random.uniform(0, 2 * math.pi)
@@ -54,7 +55,7 @@ class Seaweed:
         py5.stroke_weight(3)
 
         # Set up attrs to start drawing segments
-        base_y = py5.height
+        base_y = self.env_height
         segment_height = self.height / self.SEGMENTS
 
         py5.begin_shape()
