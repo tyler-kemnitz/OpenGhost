@@ -65,7 +65,7 @@ def _init_seaweed(num_plants, min_spacing):
 
     while len(placed_x) < num_plants and attempts < max_attempts:
         attempts += 1
-        candidate_x = random.randint(MARGIN, WIDTH - MARGIN)
+        candidate_x = random.randint(MARGIN, VISIBLE_WIDTH - MARGIN)
 
         # only init seaweed if position aligns to spacing constraints
         if all(abs(candidate_x - px) >= min_spacing for px in placed_x):
@@ -73,7 +73,8 @@ def _init_seaweed(num_plants, min_spacing):
             seaweed_list.append(
                 Seaweed(
                     x=candidate_x,
-                    height=random.randint(100,220)
+                    height=random.randint(100,220),
+                    env_height=VISIBLE_HEIGHT
                 )
             )
 
