@@ -25,15 +25,16 @@ OpenGhost intends to be a futuristic and aesthetic display medium that can run a
 ### Software
 I'm using the Python library [py5](https://py5coding.org/index.html) to display graphics. If you are planning to do the same, follow these instructions:
 
-- Install Raspberry Pi OS Bookworm (uses Python 3.11)
-  - If using Raspberry Pi Imager, select Legacy 64-bit that specifies Bookworm
-- Enable the square display on the Pi by following [these instructions](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251444307). If you used a different display, follow the manufacturer's instructions to enable it
-  - For the HyperPixel display, more detailed guidance can be found [here](https://github.com/pimoroni/hyperpixel4/issues/177) 
-- Install a virtual environment with system site packages `python -m venv .venv --system-site-packages`
-- Install Java headless using `sudo apt update && sudo apt install default-jdk`
-  - For Bookworm, this will install Java 17 by default.
-- Install py5 using `pip install py5` (requires Java 17+)
-- Clone this repo
+1.  Install Raspberry Pi OS Bookworm (uses Python 3.11)
+    1.  If using Raspberry Pi Imager, select Legacy 64-bit that specifies Bookworm
+2. Enable the square display on the Pi by following [these instructions](https://shop.pimoroni.com/products/hyperpixel-4-square?variant=30138251444307). If you used a different display, follow the manufacturer's instructions to enable it
+    1. For the HyperPixel display, more detailed guidance can be found [here](https://github.com/pimoroni/hyperpixel4/issues/177) 
+3. Clone this repository and `cd` into the base directory.
+4. Install a virtual environment with system site packages: `python -m venv .venv --system-site-packages`
+5. Activate the virtual environment: `source .venv/bin/activate`
+6. Install Java headless using `sudo apt update && sudo apt install default-jdk`
+    1. For Bookworm, this will install Java 17 by default.
+7. Install py5 using `pip install py5` (requires Java 17+)
 
 #### If The Camera Is Being Used
 - Downgrade numpy to `numpy==1.26.4` (any numpy version less than 2.0)
