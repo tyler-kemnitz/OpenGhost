@@ -4,8 +4,9 @@ import py5
 
 from entities.sea_creatures import Fish
 from entities.sea_plants import Seaweed
-from common.fonts import set_mono_font
 from scenes.scene import Scene
+from common.fonts import set_mono_font
+from debug._utils import draw_frame
 
 class AquariumScene(Scene):
     """Owns and updates every drawable entity in the aquarium"""
@@ -17,8 +18,8 @@ class AquariumScene(Scene):
         self.height = height
         self.margin = margin
 
-        self.fish_list = list[Fish] = []
-        self.seaweed_list = list[Seaweed] = []
+        self.fish_list: list[Fish] = []
+        self.seaweed_list: list[Seaweed] = []
 
     ##
     # Public Interface
@@ -39,6 +40,9 @@ class AquariumScene(Scene):
     def display(self):
         """Render scene for all sea entities"""
         py5.background(*self.BACKGROUND_COLOR)
+
+        # TODO::Make this optional via args
+        draw_frame(self.width, self.height)
 
         # Render seaweed first so it's behind the fish
         for seaweed in self.seaweed_list:
