@@ -23,9 +23,7 @@ class Bubble:
 
     # angular frequency of the wobble, radians/frame
     DRIFT_FREQUENCY: float = 0.10
-
-    OUTLINE_WEIGHT: float = 1.5 # pixels
-
+    
     # pixels below the top margin at which fade-out starts
     FADE_ZONE: int = 80
 
@@ -78,7 +76,7 @@ class Bubble:
         # scope bubble styling to 
         py5.push_style()
         
-        py5.stroke_weight(self.OUTLINE_WEIGHT) # TODO::Probs doesn't need to be constant
+        py5.stroke_weight(1.5)
         py5.stroke(210, 25, 92, alpha) # pale blue-white
 
         # faint fill to help add spherical appearance
@@ -86,7 +84,7 @@ class Bubble:
         py5.circle(self.x, self.y, self.radius * 2)
 
         # add specular highlight
-        if self.radius > 3: # TODO::Make it relative to provided target_radius
+        if self.radius >= (self.target_radius / 3):
             py5.no_stroke()
             py5.fill(210, 5, 100, int(alpha) * 0.70)
             highlight_d = self.radius * 0.55

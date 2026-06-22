@@ -55,9 +55,12 @@ class Fish:
         self._wander()
 
     def display(self):
-        # TODO::I think py5.push_style() / pop_style() are needed
+        py5.push_style()
+        
         py5.fill(self.hue, self.saturation, self.brightness) # Set fish color
         py5.text(self._sprite(), self.x, self.y)
+        
+        py5.pop_style()
 
     ###
     # Private Helpers
