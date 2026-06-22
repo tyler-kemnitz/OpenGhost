@@ -2,5 +2,6 @@
 *.log
 .idea/
 __pycache__/
+*.swp
 .python-version
 NEW_FEATURES.md
