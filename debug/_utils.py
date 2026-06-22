@@ -1,6 +1,6 @@
 import py5
 
-def draw_frame(width: int, height: int):
+def draw_debug_border(width: int, height: int):
     """Draws border of specified dimensions"""
     py5.push_style()
 

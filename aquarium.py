@@ -13,7 +13,7 @@ VISIBLE_HEIGHT = 550
 VISIBLE_OFFSET_X = (WIDTH - VISIBLE_WIDTH) // 2
 VISIBLE_OFFSET_Y = (HEIGHT - VISIBLE_HEIGHT) // 2
 
-scene = AquariumScene(width=VISIBLE_WIDTH, height=VISIBLE_HEIGHT)
+scene = AquariumScene(width=VISIBLE_WIDTH, height=VISIBLE_HEIGHT, margin=MARGIN)
 
 def settings():
     py5.size(WIDTH,HEIGHT)
