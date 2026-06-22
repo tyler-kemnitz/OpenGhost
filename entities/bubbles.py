@@ -77,10 +77,10 @@ class Bubble:
         py5.push_style()
         
         py5.stroke_weight(1.5)
-        py5.stroke(210, 25, 92, alpha) # pale blue-white
+        py5.stroke(210, 20, 92, alpha) # pale blue-white
 
         # faint fill to help add spherical appearance
-        py5.fill(210, 15, 98, int(alpha * 0.12))
+        py5.fill(210, 8, 98, int(alpha * 0.12))
         py5.circle(self.x, self.y, self.radius * 2)
 
         # add specular highlight
