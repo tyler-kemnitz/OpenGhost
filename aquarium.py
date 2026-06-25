@@ -3,8 +3,8 @@ import py5
 from scenes.aquarium_scene import AquariumScene
 
 # Base canvas attrs. Aligns to Hyperpixel square display
-WIDTH = 750
-HEIGHT = 750
+WIDTH = 720
+HEIGHT = 720
 MARGIN = 25
 
 # Attrs to account for the restricted visible area imposed by 50mm cube
@@ -20,6 +20,7 @@ def settings():
 
 def setup():
     """Configures global styling and aquarium artifacts"""
+    py5.window_move(0,0) # keep at top-left for intended Pi display
     scene.setup(
         num_fish=5, 
         num_seaweed=10,
