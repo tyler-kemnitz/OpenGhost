@@ -18,6 +18,8 @@ XAUTHORITY =  os.environ.get("XAUTHORITY", os.path.expanduser("~/.Xauthority")) 
 
 # injected via systemd service file
 API_TOKEN = os.environ.get("OPENGHOST_TOKEN", "")
+if not API_TOKEN:
+    raise RuntimeError("OPENGHOST_TOKEN is not set. Refusing to start without auth")
 
 # Registry of valid sketch names as entry points to scripts
 SKETCHES = { 
