@@ -20,9 +20,9 @@ XAUTHORITY =  os.environ.get("XAUTHORITY", os.path.expanduser("~/.Xauthority")) 
 API_TOKEN = os.environ.get("OPENGHOST_TOKEN", "")
 
 # Registry of valid sketch names as entry points to scripts
-SKETCHES = [
-    { "aquarium": "aquraium.py" },
-]
+SKETCHES = { 
+    "aquarium": "aquraium.py"
+}
 
 _process: subprocess.Popen | None = None # used to run sketches via bash
 
@@ -52,7 +52,7 @@ def _validate() -> str | None:
 @app.route("/start/<sketch_name>")
 def start(sketch_name: str) -> str:
     global _process
-    
+
     if not _authorized():
         return _json({"error": "unauthorized"}, 401)
     
