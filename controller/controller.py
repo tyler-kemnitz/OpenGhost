@@ -51,6 +51,8 @@ def _validate() -> str | None:
 
 @app.route("/start/<sketch_name>")
 def start(sketch_name: str) -> str:
+    global _process
+    
     if not _authorized():
         return _json({"error": "unauthorized"}, 401)
     
@@ -61,8 +63,6 @@ def start(sketch_name: str) -> str:
     if _is_running():
         return _json({"status": "already_running", "pid": _process.pid})
     
-    global _process
-
     env = os.environ.copy()
     env["DISPLAY"] = DISPLAY_ENV
     env["XAUTHORITY"] = XAUTHORITY
