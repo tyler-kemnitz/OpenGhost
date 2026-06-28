@@ -21,7 +21,7 @@ API_TOKEN = os.environ.get("OPENGHOST_TOKEN", "")
 
 # Registry of valid sketch names as entry points to scripts
 SKETCHES = { 
-    "aquarium": "aquraium.py"
+    "aquarium": "aquarium.py"
 }
 
 _process: subprocess.Popen | None = None # used to run sketches via bash
