@@ -19,7 +19,7 @@ XAUTHORITY =  os.environ.get("XAUTHORITY", os.path.expanduser("~/.Xauthority")) 
 # injected via systemd service file
 API_TOKEN = os.environ.get("OPENGHOST_TOKEN", "")
 if not API_TOKEN:
-    raise RuntimeError("OPENGHOST_TOKEN is not set. Refusing to start without auth")
+    raise RuntimeError("Auth token not set. Refusing to start without auth")
 
 # Registry of valid sketch names as entry points to scripts
 SKETCHES = { 
@@ -48,13 +48,17 @@ def _json(data: dict, status: int=200) -> str:
 
     return json.dumps(data)
 
-def _validate() -> str | None:
-    return None # TODO::Consolidate auth and is_running checks here
-
-@app.route("/start/<sketch_name>")
+@app.route("/start/<sketch_name>", method="POST")
 def start(sketch_name: str) -> str:
+    """
+    Start an sketch on the OpenGhost machine
+
+    Args:
+        sketch_name: Name of sketch to execute. Value must match controller registry
+    """
     global _process
 
+    # Check auth and valid input
     if not _authorized():
         return _json({"error": "unauthorized"}, 401)
     
@@ -65,6 +69,7 @@ def start(sketch_name: str) -> str:
     if _is_running():
         return _json({"status": "already_running", "pid": _process.pid})
     
+    # Execute subprocess to execute sketch on OpenGhost machine
     env = os.environ.copy()
     env["DISPLAY"] = DISPLAY_ENV
     env["XAUTHORITY"] = XAUTHORITY
@@ -76,8 +81,9 @@ def start(sketch_name: str) -> str:
     )
     return _json({"status": "started", "pid": _process.pid})
 
-@app.route('/stop')
+@app.route('/stop', method="POST")
 def stop() -> str:
+    """Stops currently running sketch on OpenGhost machine"""
     global _process
 
     if not _authorized():
@@ -98,6 +104,7 @@ def stop() -> str:
 
 @app.route('/status')
 def status() -> str:
+    """Provides current status of controller API"""
     response.content_type = 'application/json'
     pid = _process.pid if _is_running() else None
     
