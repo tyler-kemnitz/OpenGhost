@@ -1,5 +1,6 @@
 import os
 import hmac
+import threading
 import subprocess
 
 from bottle import Bottle, request, response
@@ -26,7 +27,7 @@ SKETCHES = {
     "aquarium": "aquarium.py"
 }
 
-_process: subprocess.Popen | None = None # used to run sketches via bash
+_sketch_process: subprocess.Popen | None = None # used to run sketches via bash
 
 def _authorized() -> bool:
     """Validate request token using constant-time comparison"""
@@ -39,24 +40,24 @@ def _is_running() -> bool:
 
     Popen.poll() returns None while process is still running
     """
-    return _process is not None and _process.poll() is None
+    return _sketch_process is not None and _sketch_process.poll() is None
 
-def _json(data: dict, status: int=200) -> str:
+def _json(data: dict, status_code: int=200) -> str:
     """Sets response content-type and status code, then returns JSON string"""
     response.content_type = 'application/json'
-    response.status = status
+    response.status = status_code
 
     return json.dumps(data)
 
 @app.route("/start/<sketch_name>", method="POST")
 def start(sketch_name: str) -> str:
     """
-    Start an sketch on the OpenGhost machine
+    Start a sketch on the OpenGhost machine
 
     Args:
         sketch_name: Name of sketch to execute. Value must match controller registry
     """
-    global _process
+    global _sketch_process
 
     # Check auth and valid input
     if not _authorized():
@@ -67,24 +68,24 @@ def start(sketch_name: str) -> str:
         return _json({ "error": "unknown_sketch" }, 404)
     
     if _is_running():
-        return _json({"status": "already_running", "pid": _process.pid})
+        return _json({"status": "already_running", "pid": _sketch_process.pid})
     
     # Execute subprocess to execute sketch on OpenGhost machine
     env = os.environ.copy()
     env["DISPLAY"] = DISPLAY_ENV
     env["XAUTHORITY"] = XAUTHORITY
 
-    _process = subprocess.Popen(
+    _sketch_process = subprocess.Popen(
         ["bash", "-c", f"source .venv/bin/activate && python {script}"],
         cwd=BASE_DIR,
         env=env
     )
-    return _json({"status": "started", "pid": _process.pid})
+    return _json({"status": "started", "pid": _sketch_process.pid})
 
 @app.route('/stop', method="POST")
 def stop() -> str:
     """Stops currently running sketch on OpenGhost machine"""
-    global _process
+    global _sketch_process
 
     if not _authorized():
         return _json({"error": "unauthorized"}, 401)
@@ -93,20 +94,30 @@ def stop() -> str:
         return _json({"status": "not_running"})
     
     # SIGTERM asks py5 to shut down cleanly. Runs SIGKILL after 5 seconds
-    _process.terminate()
+    _sketch_process.terminate()
     try:
-        _process.wait(timeout=5)
+        _sketch_process.wait(timeout=5)
     except subprocess.TimeoutExpired:
-        _process.kill()
+        _sketch_process.kill()
     
-    _process = None
+    _sketch_process = None
     return _json({"status": "stopped"})
+
+@app.route('/shutdown', method="POST")
+def shutdown() -> str:
+    """Powers off OpenGhost machine using poweroff command."""
+    if not _authorized():
+        return _json({"error": "unauthorized"}, 401)
+
+    # Two-second delay gives HTTP response time to reach client before network stack goes down
+    threading.Timer(2.0, lambda: subprocess.run(["sudo", "/usr/sbin/poweroff"])).start()
+    return _json({"status": "shutting_down"})
 
 @app.route('/status')
 def status() -> str:
     """Provides current status of controller API"""
     response.content_type = 'application/json'
-    pid = _process.pid if _is_running() else None
+    pid = _sketch_process.pid if _is_running() else None
     
     return _json({"running": _is_running(), "pid": pid })
 
