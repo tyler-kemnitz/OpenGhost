@@ -2,7 +2,7 @@ import py5
 
 from scenes.aquarium_scene import AquariumScene
 
-# Base canvas attrs. Aligns to Hyperpixel square display
+# Base canvas attrs. Aligns to HyperPixel square display
 WIDTH = 720
 HEIGHT = 720
 MARGIN = 25

@@ -1,0 +1,87 @@
+# Remote Controller Setup
+
+> To keep the Pi's address stable, consider assigning a static IP via a DHCP reservation in your router's admin interface.
+> Find the Pi's MAC address with `ip link show`. Look for `wlan0` (wireless) or `eth0` (wired) and map it to the fixed address. No port forwarding is needed or recommended.
+
+OpenGhost includes a lightweight HTTP control server ([`controller/controller.py`](../controller/controller.py)) that lets you start and stop sketches remotely from any device on the same network. In this way, you can set up RESTful clients to manage your machine.
+
+### `systemd` Service Setup
+The steps below will guide you through creating a `systemd` service on the Pi that exposes `controller.py` as an authenticated API to other devices on the same network.
+
+SSH into your Pi from a different device and complete the following:
+
+1. Generate secret token. I opted for a simple use of the `secrets` library:  `python -c "import secrets; print(secrets.token_hex(32))"`
+   1. Copy the output for use in the next two steps.
+2. Create the `.env` file the service will use to store the token:
+    ```bash
+    mkdir -p ~/.config/systemd/user
+    touch ~/.config/systemd/user/openghost.env
+    chmod 600 ~/.config/systemd/user/openghost.env
+    ```
+    1. Directories under `.config` may need to be created as well, which is why you're using `mkdir -p`. 
+    2. Add the following line to `openghost.env`, substituting your generated token:
+        ```
+        OPENGHOST_TOKEN=your_generated_token_here
+        ```
+3. **Create the service file** at `~/.config/systemd/user/openghost-controller.service`.
+    ```ini
+    [Unit]
+    Description=OpenGhost HTTP Controller
+    After=network.target
+ 
+    [Service]
+    Type=simple
+    WorkingDirectory=/home/<user_path>/OpenGhost
+    ExecStart=/home/<user_path>/OpenGhost/.venv/bin/python controller/controller.py
+    EnvironmentFile=/home/<user_path>/.config/systemd/user/openghost.env
+    Restart=always
+    RestartSec=5
+    StandardOutput=journal
+    StandardError=journal
+     
+    [Install]
+    WantedBy=default.target
+    ```
+    1. Ensure `WorkingDirectory`, `ExecStart`, and `EnvironmentFile` point to the correct locations within the Pi user's files.
+4. Enable and start the service:
+    ```bash
+    loginctl enable-linger <user>
+    systemctl --user daemon-reload
+    systemctl --user enable openghost-controller
+    systemctl --user start openghost-controller
+    systemctl --user status openghost-controller
+    ```
+
+Moving forward, your server should start automatically when the Pi boots up.
+
+#### Enabling Remote Shutdown
+The controller comes with an endpoint to initiate a full Pi shutdown sequence using `sudo poweroff`. 
+This is recommended to ensure you do not have to pull a plug manually and risk filesystem corruption.
+
+To keep clients lightweight, enable this command to be executed sans password by adding a `sudoers` configuration:
+1. Confirm your Pi's `poweroff` path: `which poweroff`. Example below shows `/usr/sbin/poweroff`.
+2. Use `visudo` to safely make changes to your `sudoers` config:
+   ```bash
+   sudo visudo /etc/sudoers.d/openghost
+   # In editor, add line below and save
+   <username> ALL=(ALL) NOPASSWD: /usr/sbin/poweroff
+   ```
+
+### Useful Service Commands
+```bash
+journalctl --user -u openghost-controller -f        # tail live logs while server is running. may require add'l setup
+systemctl --user restart openghost-controller       # after editing controller.py, restart controller
+systemctl --user daemon-reload && systemctl --user restart openghost-controller  # after editing the service file, reload entire service
+```
+
+### Client Example: Apple Shortcuts Setup
+Each action requires one Shortcut with a single **Get Contents of URL** action:
+
+|            | Status                       | Start                                | Stop                        | Shut Down                      |
+|------------|------------------------------|--------------------------------------|-----------------------------|--------------------------------|
+| **URL**    | `http://<pi-ip>:5000/status` | `http://<pi-ip>:5000/start/aquarium` | `http://<pi-ip>:5000/stop`  | `http://<pi-ip>:5000/shutdown` |
+| **Method** | GET                          | POST                                 | POST                        | POST                           |
+| **Header** | `X-API-Token: <your token>`  | `X-API-Token: <your token>`          | `X-API-Token: <your token>` | `X-API-Token: <your token>`    |
+
+* Add a **Show Result** action after the URL fetch to display the JSON response. 
+* To enable dynamic sketch selection, add an **Ask for Input** step before the `start` call and interpolate the result into the URL path: `http://<pi-ip>:5000/start/<input>`.

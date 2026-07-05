@@ -7,7 +7,7 @@ from entities.sea_plants import Seaweed
 from entities.bubbles import BubbleStream
 from scenes.scene import Scene
 from common.fonts import set_mono_font
-from debug._utils import draw_debug_border
+# from debug._utils import draw_debug_border
 
 class AquariumScene(Scene):
     """Owns and updates every drawable entity in the aquarium"""
@@ -46,8 +46,8 @@ class AquariumScene(Scene):
         """Render scene for all sea entities"""
         py5.background(*self.BACKGROUND_COLOR)
 
-        # TODO::Can remove / comment out once development is done
-        draw_debug_border(self.width, self.height)
+        # Can uncomment when needing to debug sketch bounds
+        # draw_debug_border(self.width, self.height)
 
         # stream of bubbles
         self.bubble_stream.display()
