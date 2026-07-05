@@ -79,7 +79,7 @@ Better for early prototyping and setup. If you're doing testing on a non-Pi mach
 ### Remote Execution
 Once the Pi's controller service is running, sketches can be started and stopped from any device on the same network. 
 
-See [docs/remote-controller.md](docs/remote-controller.md) for full setup instructions.
+See [```docs/remote-controller.md```](docs/remote-controller.md) for full setup instructions.
  
 Once configured, verify a sketch is registered and reachable from any machine on the network:
 ```bash
