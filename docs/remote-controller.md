@@ -5,6 +5,7 @@
 
 OpenGhost includes a lightweight HTTP control server ([`controller/controller.py`](../controller/controller.py)) that lets you start and stop sketches remotely from any device on the same network. In this way, you can set up RESTful clients to manage your machine.
 
+### `systemd` Service Setup
 The steps below will guide you through creating a `systemd` service on the Pi that exposes `controller.py` as an authenticated API to other devices on the same network.
 
 SSH into your Pi from a different device and complete the following:
@@ -53,6 +54,19 @@ SSH into your Pi from a different device and complete the following:
 
 Moving forward, your server should start automatically when the Pi boots up.
 
+#### Enabling Remote Shutdown
+The controller comes with an endpoint to initiate a full Pi shutdown sequence using `sudo poweroff`. 
+This is recommended to ensure you do not have to pull a plug manually and risk filesystem corruption.
+
+To keep clients lightweight, enable this command to be executed sans password by adding a `sudoers` configuration:
+1. Confirm your Pi's `poweroff` path: `which poweroff`. Example below shows `/usr/sbin/poweroff`.
+2. Use `visudo` to safely make changes to your `sudoers` config:
+   ```bash
+   sudo visudo /etc/sudoers.d/openghost
+   # In editor, add line below and save
+   <username> ALL=(ALL) NOPASSWD: /usr/sbin/poweroff
+   ```
+
 ### Useful Service Commands
 ```bash
 journalctl --user -u openghost-controller -f        # tail live logs while server is running. may require add'l setup
@@ -63,12 +77,11 @@ systemctl --user daemon-reload && systemctl --user restart openghost-controller 
 ### Client Example: Apple Shortcuts Setup
 Each action requires one Shortcut with a single **Get Contents of URL** action:
 
-|            | Start                                | Stop                        | Status                       |
-|------------|--------------------------------------|-----------------------------|------------------------------|
-| **URL**    | `http://<pi-ip>:5000/start/aquarium` | `http://<pi-ip>:5000/stop`  | `http://<pi-ip>:5000/status` |
-| **Method** | POST                                 | POST                        | GET                          |
-| **Header** | `X-API-Token: <your token>`          | `X-API-Token: <your token>` | `X-API-Token: <your token>`  |
+|            | Status                       | Start                                | Stop                        | Shut Down                      |
+|------------|------------------------------|--------------------------------------|-----------------------------|--------------------------------|
+| **URL**    | `http://<pi-ip>:5000/status` | `http://<pi-ip>:5000/start/aquarium` | `http://<pi-ip>:5000/stop`  | `http://<pi-ip>:5000/shutdown` |
+| **Method** | GET                          | POST                                 | POST                        | POST                           |
+| **Header** | `X-API-Token: <your token>`  | `X-API-Token: <your token>`          | `X-API-Token: <your token>` | `X-API-Token: <your token>`    |
 
-Add a **Show Result** action after the URL fetch to display the JSON response. 
-
-To enable dynamic sketch selection, add an **Ask for Input** step before the `start` call and interpolate the result into the URL path: `http://<pi-ip>:5000/start/<input>`.
+* Add a **Show Result** action after the URL fetch to display the JSON response. 
+* To enable dynamic sketch selection, add an **Ask for Input** step before the `start` call and interpolate the result into the URL path: `http://<pi-ip>:5000/start/<input>`.
